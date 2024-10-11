@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Log file to store keystrokes
+LOGFILE="$HOME/key_log.txt"
+
+# Ensure log file exists
+touch $LOGFILE
+
+# Start logging keystrokes using showkey
+sudo showkey --ascii | awk '{ print strftime("%Y-%m-%d %H:%M:%S", systime()) " " $0 }' >> $LOGFILE &
+
+# Get the process ID of the background job
+PID=$!
+
+echo "Logging keystrokes to $LOGFILE. Press [CTRL+C] to stop."
+
+# Trap signal to end logging
+trap "sudo kill $PID; exit" SIGINT
+
+# Wait for the process to end
+wait $PID
